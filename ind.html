@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Time Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #ffbe0b;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 25px;
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        .card-title i {
+            font-size: 1.2rem;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-group label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-warning:hover {
+            background-color: #e6ac00;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .results {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border);
+        }
+
+        .results h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .week-summary {
+            background-color: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .time-entry {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .time-entry .time-label {
+            min-width: 120px;
+            font-weight: 600;
+        }
+
+        .history-card {
+            margin-top: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .highlight {
+            background-color: #e6f7ff;
+            font-weight: 700;
+        }
+
+        .telework {
+            background-color: #e6f2ff;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .progress-container {
+            height: 12px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: white;
+            border-left: 4px solid var(--success);
+            box-shadow: var(--card-shadow);
+            border-radius: 4px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-group {
+                min-width: 100%;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> Data saved successfully!
+    </div>
+
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-clock"></i> Work Time Calculator</h1>
+            <p>Calculate your work hours, breaks, and weekly totals</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-calendar-plus"></i>
+                    <h2>Add New Entry</h2>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="entry-date">Date</label>
+                        <input type="date" id="entry-date" class="form-control" value="2025-04-24">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Work Type</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="telework-checkbox">
+                            <label for="telework-checkbox">Telework (TLT)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="time-entries">
+                    <div class="time-entry">
+                        <span class="time-label">Morning Entry:</span>
+                        <input type="time" id="time-entry1" class="form-control" value="08:33">
+                    </div>
+                    
+                    <div class="time-entry">
+                        <span class="time-label">Lunch Start:</span>
+                        <input type="time" id="time-entry2" class="form-control" value="12:05">
+                    </div>
+                    
+                    <div class="time-entry">
+                        <span class="time-label">Lunch End:</span>
+                        <input type="time" id="time-entry3" class="form-control" value="13:06">
+                    </div>
+                    
+                    <div class="time-entry">
+                        <span class="time-label">Leaving Time:</span>
+                        <input type="time" id="time-entry4" class="form-control" value="16:45">
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button id="add-entry-btn" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> Add Entry
+                    </button>
+                    <button id="calculate-day-btn" class="btn btn-outline">
+                        <i class="fas fa-calculator"></i> Calculate Day
+                    </button>
+                    <button id="estimate-leaving-btn" class="btn btn-warning">
+                        <i class="fas fa-hourglass-half"></i> Estimate Leaving Time
+                    </button>
+                    <button id="calculate-week-btn" class="btn btn-primary">
+                        <i class="fas fa-calendar-week"></i> Calculate Week
+                    </button>
+                    <button id="reset-week-btn" class="btn btn-outline">
+                        <i class="fas fa-redo"></i> Reset Week
+                    </button>
+                </div>
+                
+                <div class="results" id="daily-results">
+                    <h3>Daily Results</h3>
+                    <div class="result-item">
+                        <span class="result-label">Total Work Time:</span>
+                        <span class="result-value" id="total-work">7h 11m</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Break Duration:</span>
+                        <span class="result-value" id="break-duration">1h 1m</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Adjusted Break:</span>
+                        <span class="result-value" id="adjusted-break">1h 1m</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Status:</span>
+                        <span class="result-value" id="work-status">Complete</span>
+                    </div>
+                </div>
+                
+                <div class="results" id="estimate-result" style="display: none;">
+                    <h3>Leaving Time Estimate</h3>
+                    <div class="result-item">
+                        <span class="result-label">To complete 7 hours:</span>
+                        <span class="result-value" id="leaving-estimate">16:34</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card week-summary">
+                <div class="card-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>Weekly Summary</h2>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="weekly-progress" style="width: 82%"></div>
+                </div>
+                
+                <div class="results">
+                    <div class="result-item">
+                        <span class="result-label">Total Hours Worked:</span>
+                        <span class="result-value" id="total-week-hours">28h 45m</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Hours Remaining (35h):</span>
+                        <span class="result-value" id="remaining-hours">6h 15m</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Days Recorded:</span>
+                        <span class="result-value" id="days-recorded">4 days</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span class="result-label">Projected Completion:</span>
+                        <span class="result-value" id="projected-completion">Friday afternoon</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card history-card">
+                <div class="card-title">
+                    <i class="fas fa-history"></i>
+                    <h2>Time Entry History</h2>
+                </div>
+                
+                <table id="history-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Morning</th>
+                            <th>Lunch Start</th>
+                            <th>Lunch End</th>
+                            <th>Leaving</th>
+                            <th>Work Time</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <!-- Entries will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>Work Time Calculator &copy; 2025 | Data stored locally in your browser</p>
+        </footer>
+    </div>
+
+    <script>
+        // Data storage using localStorage
+        const STORAGE_KEY = 'workTimeEntries';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const teleworkCheckbox = document.getElementById('telework-checkbox');
+            const timeInputs = document.querySelectorAll('.time-entries input[type="time"]');
+            const addEntryBtn = document.getElementById('add-entry-btn');
+            const calculateDayBtn = document.getElementById('calculate-day-btn');
+            const calculateWeekBtn = document.getElementById('calculate-week-btn');
+            const estimateLeavingBtn = document.getElementById('estimate-leaving-btn');
+            const resetWeekBtn = document.getElementById('reset-week-btn');
+            const dailyResults = document.getElementById('daily-results');
+            const estimateResult = document.getElementById('estimate-result');
+            const historyBody = document.getElementById('history-body');
+            const notification = document.getElementById('notification');
+            
+            // Initialize app
+            loadEntries();
+            updateWeeklySummary();
+            
+            // Toggle time inputs based on telework checkbox
+            teleworkCheckbox.addEventListener('change', function() {
+                const isChecked = this.checked;
+                timeInputs.forEach(input => {
+                    input.disabled = isChecked;
+                    if (isChecked) {
+                        input.value = '';
+                    }
+                });
+            });
+            
+            // Calculate day button
+            calculateDayBtn.addEventListener('click', function() {
+                calculateDay();
+                dailyResults.style.display = 'block';
+                estimateResult.style.display = 'none';
+            });
+            
+            // Estimate leaving time button
+            estimateLeavingBtn.addEventListener('click', function() {
+                estimateLeavingTime();
+                estimateResult.style.display = 'block';
+            });
+            
+            // Add entry button
+            addEntryBtn.addEventListener('click', function() {
+                addEntry();
+            });
+            
+            // Calculate week button
+            calculateWeekBtn.addEventListener('click', function() {
+                updateWeeklySummary();
+            });
+            
+            // Reset week button
+            resetWeekBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to reset all weekly data?')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    historyBody.innerHTML = '';
+                    updateWeeklySummary();
+                    showNotification('Weekly data has been reset');
+                }
+            });
+            
+            // Notification function
+            function showNotification(message) {
+                notification.querySelector('i').className = 'fas fa-check-circle';
+                notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Add new entry to storage
+            function addEntry() {
+                const date = document.getElementById('entry-date').value;
+                const isTelework = teleworkCheckbox.checked;
+                const times = {
+                    entry1: document.getElementById('time-entry1').value,
+                    entry2: document.getElementById('time-entry2').value,
+                    entry3: document.getElementById('time-entry3').value,
+                    entry4: document.getElementById('time-entry4').value
+                };
+                
+                // Validate inputs for non-telework days
+                if (!isTelework) {
+                    if (!times.entry1 || !times.entry2 || !times.entry3 || !times.entry4) {
+                        showNotification('Please fill all time fields!');
+                        return;
+                    }
+                }
+                
+                // Calculate work time
+                const result = calculateDay(true);
+                
+                // Create entry object
+                const entry = {
+                    date,
+                    isTelework,
+                    times,
+                    totalMinutes: result.totalMinutes,
+                    breakDuration: result.breakDuration,
+                    adjustedBreak: result.adjustedBreak
+                };
+                
+                // Save to localStorage
+                saveEntry(entry);
+                
+                // Update UI
+                loadEntries();
+                updateWeeklySummary();
+                
+                showNotification('Entry added successfully!');
+            }
+            
+            // Save entry to localStorage
+            function saveEntry(entry) {
+                let entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                
+                // Check if entry for this date already exists
+                const existingIndex = entries.findIndex(e => e.date === entry.date);
+                
+                if (existingIndex !== -1) {
+                    // Update existing entry
+                    entries[existingIndex] = entry;
+                } else {
+                    // Add new entry
+                    entries.push(entry);
+                }
+                
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+            }
+            
+            // Load entries from localStorage
+            function loadEntries() {
+                const entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                historyBody.innerHTML = '';
+                
+                if (entries.length === 0) {
+                    historyBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No entries yet</td></tr>';
+                    return;
+                }
+                
+                // Sort entries by date (newest first)
+                entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                // Add entries to table
+                entries.forEach(entry => {
+                    const row = document.createElement('tr');
+                    if (entry.isTelework) {
+                        row.classList.add('telework');
+                    }
+                    
+                    const date = new Date(entry.date);
+                    const dateStr = date.toLocaleDateString('fr-FR', { 
+                        weekday: 'short', 
+                        day: 'numeric', 
+                        month: 'short', 
+                        year: 'numeric' 
+                    });
+                    
+                    const totalTime = formatTime(entry.totalMinutes);
+                    
+                    row.innerHTML = `
+                        <td>${dateStr}</td>
+                        <td>${entry.isTelework ? '-' : entry.times.entry1 || '-'}</td>
+                        <td>${entry.isTelework ? '-' : entry.times.entry2 || '-'}</td>
+                        <td>${entry.isTelework ? '-' : entry.times.entry3 || '-'}</td>
+                        <td>${entry.isTelework ? '-' : entry.times.entry4 || '-'}</td>
+                        <td>${totalTime}</td>
+                        <td>${entry.isTelework ? 'Telework' : 'Office'}</td>
+                    `;
+                    
+                    historyBody.appendChild(row);
+                });
+            }
+            
+            // Update weekly summary
+            function updateWeeklySummary() {
+                const entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                const weeklyHours = 35 * 60; // 35 hours in minutes
+                
+                // Calculate total minutes for the week
+                let totalMinutes = 0;
+                entries.forEach(entry => {
+                    totalMinutes += entry.totalMinutes;
+                });
+                
+                // Calculate remaining minutes
+                const remainingMinutes = Math.max(0, weeklyHours - totalMinutes);
+                
+                // Format times
+                const totalFormatted = formatTime(totalMinutes);
+                const remainingFormatted = formatTime(remainingMinutes);
+                
+                // Update UI
+                document.getElementById('total-week-hours').textContent = totalFormatted;
+                document.getElementById('remaining-hours').textContent = remainingFormatted;
+                document.getElementById('days-recorded').textContent = `${entries.length} days`;
+                
+                // Update progress bar
+                const progress = Math.min(100, (totalMinutes / weeklyHours) * 100);
+                document.getElementById('weekly-progress').style.width = `${progress}%`;
+                
+                // Projected completion
+                if (entries.length === 0) {
+                    document.getElementById('projected-completion').textContent = 'No data';
+                } else if (remainingMinutes <= 0) {
+                    document.getElementById('projected-completion').textContent = 'Week completed!';
+                } else {
+                    const daysRemaining = Math.ceil(remainingMinutes / (7 * 60));
+                    document.getElementById('projected-completion').textContent = `${daysRemaining} day${daysRemaining > 1 ? 's' : ''} remaining`;
+                }
+            }
+            
+            // Calculate day work time
+            function calculateDay(silent = false) {
+                const isTelework = teleworkCheckbox.checked;
+                
+                if (isTelework) {
+                    if (!silent) {
+                        document.getElementById('total-work').textContent = '7h 00m';
+                        document.getElementById('break-duration').textContent = '-';
+                        document.getElementById('adjusted-break').textContent = '-';
+                        document.getElementById('work-status').textContent = 'Telework';
+                        document.getElementById('work-status').style.color = '#3f37c9';
+                    }
+                    
+                    return {
+                        totalMinutes: 420,
+                        breakDuration: 0,
+                        adjustedBreak: 0
+                    };
+                }
+                
+                // Get time values
+                const t1 = document.getElementById('time-entry1').value;
+                const t2 = document.getElementById('time-entry2').value;
+                const t3 = document.getElementById('time-entry3').value;
+                const t4 = document.getElementById('time-entry4').value;
+                
+                // Validate inputs
+                if (!t1 || !t2 || !t3 || !t4) {
+                    if (!silent) {
+                        showNotification('Please fill all time fields!');
+                    }
+                    return null;
+                }
+                
+                // Calculate work time
+                const [h1, m1] = t1.split(':').map(Number);
+                const [h2, m2] = t2.split(':').map(Number);
+                const [h3, m3] = t3.split(':').map(Number);
+                const [h4, m4] = t4.split(':').map(Number);
+                
+                // Convert to minutes
+                const startMinutes = h1 * 60 + m1;
+                const lunchStartMinutes = h2 * 60 + m2;
+                const lunchEndMinutes = h3 * 60 + m3;
+                const endMinutes = h4 * 60 + m4;
+                
+                // Calculate break duration
+                let breakDuration = lunchEndMinutes - lunchStartMinutes;
+                const adjustedBreak = breakDuration < 45 ? 45 : breakDuration;
+                
+                // Calculate work time
+                const morningSession = lunchStartMinutes - startMinutes;
+                const afternoonSession = endMinutes - lunchEndMinutes;
+                let totalWorkMinutes = morningSession + afternoonSession;
+                
+                // Apply break adjustment if needed
+                if (breakDuration < 45) {
+                    totalWorkMinutes -= (45 - breakDuration);
+                }
+                
+                // Format results
+                const formatTime = (minutes) => {
+                    const h = Math.floor(minutes / 60);
+                    const m = minutes % 60;
+                    return `${h}h ${m.toString().padStart(2, '0')}m`;
+                };
+                
+                if (!silent) {
+                    // Update UI
+                    document.getElementById('total-work').textContent = formatTime(totalWorkMinutes);
+                    document.getElementById('break-duration').textContent = formatTime(breakDuration);
+                    document.getElementById('adjusted-break').textContent = formatTime(adjustedBreak);
+                    
+                    // Set status
+                    const statusElement = document.getElementById('work-status');
+                    if (totalWorkMinutes >= 420) { // 7 hours = 420 minutes
+                        statusElement.textContent = 'Complete';
+                        statusElement.style.color = '#4caf50';
+                    } else {
+                        statusElement.textContent = 'Incomplete';
+                        statusElement.style.color = '#f72585';
+                    }
+                }
+                
+                return {
+                    totalMinutes: totalWorkMinutes,
+                    breakDuration,
+                    adjustedBreak
+                };
+            }
+            
+            // Format time from minutes to "Xh Ym"
+            function formatTime(minutes) {
+                const h = Math.floor(minutes / 60);
+                const m = minutes % 60;
+                return `${h}h ${m.toString().padStart(2, '0')}m`;
+            }
+            
+            // Estimate leaving time
+            function estimateLeavingTime() {
+                if (teleworkCheckbox.checked) {
+                    showNotification('Estimation not needed for telework days');
+                    return;
+                }
+                
+                // Get time values
+                const t1 = document.getElementById('time-entry1').value;
+                const t2 = document.getElementById('time-entry2').value;
+                const t3 = document.getElementById('time-entry3').value;
+                
+                // Validate inputs
+                if (!t1 || !t2 || !t3) {
+                    showNotification('Please fill first three time fields!');
+                    return;
+                }
+                
+                // Calculate break duration
+                const [h2, m2] = t2.split(':').map(Number);
+                const [h3, m3] = t3.split(':').map(Number);
+                let breakDuration = (h3 * 60 + m3) - (h2 * 60 + m2);
+                const adjustedBreak = breakDuration < 45 ? 45 : breakDuration;
+                
+                // Calculate leaving time
+                const [h1, m1] = t1.split(':').map(Number);
+                let leaveMinutes = h1 * 60 + m1 + 420 + adjustedBreak; // 7 hours + break
+                
+                // Format leaving time
+                const leaveHours = Math.floor(leaveMinutes / 60);
+                const leaveMins = leaveMinutes % 60;
+                const leaveTime = `${leaveHours.toString().padStart(2, '0')}:${leaveMins.toString().padStart(2, '0')}`;
+                
+                // Update UI
+                document.getElementById('leaving-estimate').textContent = leaveTime;
+            }
+            
+            // Initialize with sample data if localStorage is empty
+            function initializeSampleData() {
+                const entries = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                if (!entries || entries.length === 0) {
+                    const sampleEntries = [
+                        {
+                            date: "2025-04-24",
+                            isTelework: false,
+                            times: {entry1: "08:33", entry2: "12:05", entry3: "13:06", entry4: "16:45"},
+                            totalMinutes: 431,
+                            breakDuration: 61,
+                            adjustedBreak: 61
+                        },
+                        {
+                            date: "2025-04-23",
+                            isTelework: true,
+                            times: {entry1: "", entry2: "", entry3: "", entry4: ""},
+                            totalMinutes: 420,
+                            breakDuration: 0,
+                            adjustedBreak: 0
+                        },
+                        {
+                            date: "2025-04-22",
+                            isTelework: false,
+                            times: {entry1: "08:45", entry2: "12:15", entry3: "12:55", entry4: "16:30"},
+                            totalMinutes: 395,
+                            breakDuration: 40,
+                            adjustedBreak: 45
+                        },
+                        {
+                            date: "2025-04-21",
+                            isTelework: false,
+                            times: {entry1: "09:00", entry2: "12:30", entry3: "13:10", entry4: "17:00"},
+                            totalMinutes: 440,
+                            breakDuration: 40,
+                            adjustedBreak: 45
+                        }
+                    ];
+                    
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleEntries));
+                    loadEntries();
+                    updateWeeklySummary();
+                }
+            }
+            
+            // Initialize sample data
+            initializeSampleData();
+        });
+    </script>
+</body>
+</html>
